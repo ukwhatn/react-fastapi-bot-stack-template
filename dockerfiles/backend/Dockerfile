@@ -9,12 +9,15 @@ RUN apt-get update && \
     nano \
     tzdata
 
-ADD backend/requirements.txt /app/requirements.txt
+ADD backend/requirements.txt /requirements/backend.txt
 
 RUN pip install --upgrade pip && \
-    pip install --no-cache-dir --upgrade -r /app/requirements.txt
+    pip install --no-cache-dir --upgrade -r /requirements/backend.txt
 
-ADD db/requirements.txt /db/requirements.txt
-RUN pip install --no-cache-dir --upgrade -r /db/requirements.txt
+ADD db/requirements.txt /requirements/db.txt
+RUN pip install --no-cache-dir --upgrade -r /requirements/db.txt
+
+ADD redis/py/requirements.txt /requirements/redis.txt
+RUN pip install --no-cache-dir --upgrade -r /requirements/redis.txt
 
 CMD ["uvicorn", "main:app", "--reload", "--host", "0.0.0.0", "--port", "8080"]
