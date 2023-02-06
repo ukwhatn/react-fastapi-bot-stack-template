@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  backend:
+    container_name: "backend"
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/web/Dockerfile
+    volumes:
+      - ./backend:/app
+      - ./db:/user_modules/db
+    ports:
+      - 60999:8080
+    env_file:
+      - ./envs/db.env
+      - ./envs/discord.env
+      - ./envs/sentry.env
+    restart: always
+
+  bot:
+    container_name: "bot"
+    build:
+      context: .
+      dockerfile: ./Dockerfiles/bot/Dockerfile
+    volumes:
+      - ./bot:/app
+      - ./db:/user_modules/db
+    env_file:
+      - ./envs/db.env
+      - ./envs/discord.env
+      - ./envs/sentry.env
+    restart: always
