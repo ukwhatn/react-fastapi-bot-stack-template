@@ -42,6 +42,7 @@ services:
       - ./redis/conf/redis.conf:/etc/redis.conf
     networks:
       - cache_network
+    restart: always
 
   bot:
     build:
