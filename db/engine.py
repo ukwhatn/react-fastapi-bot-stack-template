@@ -20,18 +20,17 @@ SessionClass = sessionmaker(
     expire_on_commit=False
 )  # セッションを作るクラスを作成
 
-_session: SessionClass = None
 
+class Session:
+    def __init__(self, session: SessionClass = SessionClass()):
+        self.session = session
 
-def get_session():
-    global _session
-    if _session is None:
-        _session = SessionClass()
-    return _session
+    def __enter__(self):
+        return self.session
 
-
-def close_session():
-    global _session
-    if _session is not None:
-        _session.close()
-        _session = None
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if exc_type is None:
+            self.session.commit()
+        else:
+            self.session.rollback()
+        self.session.close()
