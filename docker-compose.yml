@@ -1,11 +1,23 @@
 version: '3'
 
 services:
-  backend:
-    container_name: "backend"
+  frontend:
     build:
       context: .
-      dockerfile: ./Dockerfiles/web/Dockerfile
+      dockerfile: dockerfiles/frontend/Dockerfile
+    volumes:
+      - ./frontend:/src
+    command: sh -c "cd app && PORT=3001 yarn start"
+    ports:
+      - "60998:3001"
+    env_file:
+      - ./envs/sentry.env
+    stdin_open: true
+    restart: always
+  backend:
+    build:
+      context: .
+      dockerfile: dockerfiles/backend/Dockerfile
     volumes:
       - ./backend:/app
       - ./db:/user_modules/db
@@ -13,15 +25,13 @@ services:
       - 60999:8080
     env_file:
       - ./envs/db.env
-      - ./envs/discord.env
       - ./envs/sentry.env
     restart: always
 
   bot:
-    container_name: "bot"
     build:
       context: .
-      dockerfile: ./Dockerfiles/bot/Dockerfile
+      dockerfile: dockerfiles/bot/Dockerfile
     volumes:
       - ./bot:/app
       - ./db:/user_modules/db
@@ -29,4 +39,4 @@ services:
       - ./envs/db.env
       - ./envs/discord.env
       - ./envs/sentry.env
-    restart: always
+    restart: on-failure
